@@ -15,6 +15,7 @@
  */
 package com.example.exoplayer;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -22,18 +23,30 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.util.Util;
+
+import java.io.IOException;
 
 /**
  * A fullscreen activity to play audio or video streams.
@@ -45,12 +58,14 @@ public class PlayerActivity extends AppCompatActivity {
   private boolean playWhenReady = true;
   private int currentWindow = 0;
   private long playbackPosition = 0;
+  private PlaybackStateListener playbackStateListener;
+  private static final String TAG = PlayerActivity.class.getName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_player);
-
+    playbackStateListener = new PlaybackStateListener();
     playerView = findViewById(R.id.video_view);
   }
 
@@ -96,11 +111,12 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     playerView.setPlayer(player);
-    Uri uri = Uri.parse(getString(R.string.media_url_dash));
+    Uri uri = Uri.parse("http://fed.dev.hzmantu.com/oa-project/bce0c613e364122715270faef1874251.flv");
     MediaSource mediaSource = buildMediaSource(uri);
 
     player.setPlayWhenReady(playWhenReady);
     player.seekTo(currentWindow, playbackPosition);
+    player.addListener(playbackStateListener);
     player.prepare(mediaSource, false, false);
   }
 
@@ -129,5 +145,99 @@ public class PlayerActivity extends AppCompatActivity {
         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+  }
+
+  private class PlaybackStateListener implements Player.EventListener{
+    @Override
+    public void onTimelineChanged(Timeline timeline, @Nullable Object manifest, int reason) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+      String stateString;
+      switch (playbackState){
+        case ExoPlayer.STATE_IDLE:
+          stateString = "ExoPlayer.STATE_IDLE      -";
+          break;
+        case ExoPlayer.STATE_BUFFERING:
+          stateString = "ExoPlayer.STATE_BUFFERING -";
+          break;
+        case ExoPlayer.STATE_READY:
+          stateString = "ExoPlayer.STATE_READY     -";
+          break;
+        case ExoPlayer.STATE_ENDED:
+          stateString = "ExoPlayer.STATE_ENDED     -";
+          break;
+        default:
+          stateString = "UNKNOWN_STATE             -";
+          break;
+      }
+      Log.d(TAG, "changed state to " + stateString
+              + " playWhenReady: " + playWhenReady);
+    }
+
+    @Override
+    public void onIsPlayingChanged(boolean isPlaying) {
+
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
+
+    //举例http错误
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+      if (error.type == ExoPlaybackException.TYPE_SOURCE) {
+        IOException cause = error.getSourceException();
+        if (cause instanceof HttpDataSource.HttpDataSourceException) {
+          // An HTTP error occurred.
+          HttpDataSource.HttpDataSourceException httpError = (HttpDataSource.HttpDataSourceException) cause;
+          // This is the request for which the error occurred.
+          DataSpec requestDataSpec = httpError.dataSpec;
+          // It's possible to find out more about the error both by casting and by
+          // querying the cause.
+          if (httpError instanceof HttpDataSource.InvalidResponseCodeException) {
+            // Cast to InvalidResponseCodeException and retrieve the response code,
+            // message and headers.
+          } else {
+            // Try calling httpError.getCause() to retrieve the underlying cause,
+            // although note that it may be null.
+          }
+        }
+      }
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+    }
+
+    @Override
+    public void onSeekProcessed() {
+
+    }
   }
 }

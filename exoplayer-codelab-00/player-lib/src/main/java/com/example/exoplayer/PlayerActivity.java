@@ -70,8 +70,7 @@ public class PlayerActivity extends AppCompatActivity {
         DataSource.Factory dataSourceFactory =
                 new DefaultDataSourceFactory(this, "exoplayer-codelab");
 
-        ProgressiveMediaSource.Factory mediaSourceFactory =
-                new ProgressiveMediaSource.Factory(dataSourceFactory);
+        ProgressiveMediaSource.Factory mediaSourceFactory = new ProgressiveMediaSource.Factory(dataSourceFactory);
         // Create a media source using the supplied URI
         //使用提供的URI创建媒体源
         MediaSource mediaSource1 = mediaSourceFactory.createMediaSource(uri);

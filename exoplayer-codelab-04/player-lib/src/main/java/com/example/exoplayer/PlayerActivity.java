@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -40,6 +41,7 @@ import com.google.android.exoplayer2.util.Util;
 
 /**
  * A fullscreen activity to play audio or video streams.
+ * 自定义控制界面，不使用默认的
  */
 public class PlayerActivity extends AppCompatActivity {
 
@@ -104,7 +106,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     playerView.setPlayer(player);
-    Uri uri = Uri.parse(getString(R.string.media_url_dash));
+    Uri uri = Uri.parse(getString(R.string.media_url_mp4));
     MediaSource mediaSource = buildMediaSource(uri);
 
     player.setPlayWhenReady(playWhenReady);
@@ -127,7 +129,7 @@ public class PlayerActivity extends AppCompatActivity {
   private MediaSource buildMediaSource(Uri uri) {
     DataSource.Factory dataSourceFactory =
             new DefaultDataSourceFactory(this, "exoplayer-codelab");
-    DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
+    ProgressiveMediaSource.Factory mediaSourceFactory = new ProgressiveMediaSource.Factory(dataSourceFactory);
     return mediaSourceFactory.createMediaSource(uri);
   }
 

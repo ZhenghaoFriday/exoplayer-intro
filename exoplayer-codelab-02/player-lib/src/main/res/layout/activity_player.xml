@@ -11,13 +11,16 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:orientation="vertical"
+    android:background="#fff">
 
-  <com.google.android.exoplayer2.ui.PlayerView android:id="@+id/video_view"
+  <FrameLayout
+      android:id="@+id/content"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"/>
+      android:layout_height="250dp"/>
 
-</FrameLayout>
+</LinearLayout>
