@@ -27,6 +27,8 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -34,6 +36,7 @@ import com.google.android.exoplayer2.util.Util;
 
 /**
  * A fullscreen activity to play audio or video streams.
+ * 播放自适应流 dash
  */
 public class PlayerActivity extends AppCompatActivity {
 
@@ -85,10 +88,18 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private void initializePlayer() {
-    player = ExoPlayerFactory.newSimpleInstance(this);
+    //player = ExoPlayerFactory.newSimpleInstance(this);
+    if (player == null) {
+      DefaultTrackSelector trackSelector = new DefaultTrackSelector();
+      trackSelector.setParameters(
+              trackSelector.buildUponParameters().setMaxVideoSizeSd());
+      player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);//有轨道选择器的exoplayer
+    }
     playerView.setPlayer(player);
-
-    Uri uri = Uri.parse(getString(R.string.media_url_mp4));
+    Uri uri = Uri.parse(getString(R.string.media_url_dash));
+    //http://app.maikasai.com/1d8d3660ae9dc46c2b9591d75f0c6f93.mp4
+    //"http://fed.dev.hzmantu.com/oa-project/bce0c613e364122715270faef1874251.flv"
+    //Uri uri = Uri.parse("http://app.maikasai.com/1d8d3660ae9dc46c2b9591d75f0c6f93.mp4");
     MediaSource mediaSource = buildMediaSource(uri);
 
     player.setPlayWhenReady(playWhenReady);
@@ -108,19 +119,13 @@ public class PlayerActivity extends AppCompatActivity {
 
   private MediaSource buildMediaSource(Uri uri) {
     // These factories are used to construct two media sources below
+    //DASH是一种广泛使用的自适应流格式。要流式传输DASH内容，我们需要创建一个DashMediaSource。
     DataSource.Factory dataSourceFactory =
             new DefaultDataSourceFactory(this, "exoplayer-codelab");
-    ProgressiveMediaSource.Factory mediaSourceFactory =
-            new ProgressiveMediaSource.Factory(dataSourceFactory);
 
-    // Create a media source using the supplied URI
-    MediaSource mediaSource1 = mediaSourceFactory.createMediaSource(uri);
+    DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
 
-    // Additionally create a media source using an MP3
-    Uri audioUri = Uri.parse(getString(R.string.media_url_mp3));
-    MediaSource mediaSource2 = mediaSourceFactory.createMediaSource(audioUri);
-
-    return new ConcatenatingMediaSource(mediaSource1, mediaSource2);
+    return mediaSourceFactory.createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")
