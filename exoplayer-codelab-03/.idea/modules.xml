@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/exoplayer-codelab-03.iml" filepath="$PROJECT_DIR$/exoplayer-codelab-03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/exoplayer-codelab-03-app.iml" filepath="$PROJECT_DIR$/app/exoplayer-codelab-03-app.iml" group="exoplayer-codelab-03/app" />
+      <module fileurl="file://$PROJECT_DIR$/player-lib/exoplayer-codelab-03-player-lib.iml" filepath="$PROJECT_DIR$/player-lib/exoplayer-codelab-03-player-lib.iml" group="exoplayer-codelab-03/player-lib" />
+      <module fileurl="file://$PROJECT_DIR$/exoplayer-intro-exoplayer-codelab-03.iml" filepath="$PROJECT_DIR$/exoplayer-intro-exoplayer-codelab-03.iml" group="exoplayer-codelab-03" />
       <module fileurl="file://$PROJECT_DIR$/player-lib/player-lib.iml" filepath="$PROJECT_DIR$/player-lib/player-lib.iml" />
     </modules>
   </component>
